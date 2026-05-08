@@ -33,5 +33,5 @@ corepack pnpm start --hostname 127.0.0.1 --port 3002
 ```
 后端:
 ```
-GRADLE_USER_HOME=/tmp/pupu-gradle ./gradlew bootRun --args="--spring.profiles.active=mysql --server.port=8082"
+npm run dev
 ```
