@@ -25,10 +25,13 @@ database/
 doc/
 ```
 
-## 下一步建议
-
-1. 安装 Flutter SDK 后执行前端依赖安装与真机调试
-2. 在 `backend` 中执行 `./gradlew bootRun` 启动默认开发环境服务
-3. 如需切换到 MySQL，执行 `./gradlew bootRun --args='--spring.profiles.active=mysql'`
-4. 按 `database/schema.sql` 初始化 MySQL
-5. 继续完成真实鉴权、持久化、WebSocket 聊天与后台管理端
+## 项目启动
+前端: 
+```
+corepack pnpm build
+corepack pnpm start --hostname 127.0.0.1 --port 3002
+```
+后端:
+```
+GRADLE_USER_HOME=/tmp/pupu-gradle ./gradlew bootRun --args="--spring.profiles.active=mysql --server.port=8082"
+```
