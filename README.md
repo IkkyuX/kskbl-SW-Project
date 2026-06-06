@@ -1,5 +1,7 @@
 # 유학생 커뮤니티 플랫폼
 
+[中文说明](./README.zh-CN.md)
+
 이 프로젝트는 유학생을 위한 커뮤니티 및 소셜 플랫폼입니다. 현재 프론트엔드 개발, API 연동, 테스트, 검수의 기준 디렉터리는 모두 `new_fronted` 입니다.
 
 ## 디렉터리 구조
@@ -10,7 +12,6 @@ new_fronted/    현재 기준 프론트엔드, Vite + React + TypeScript
 database/       MySQL 스키마 스크립트
 doc/            기획 문서 및 협업 문서
 frontend/       과거 프론트엔드 디렉터리, 현재 기준 아님
-adminFrontend/  과거 관리자 프론트엔드 프로토타입, 현재 기준 아님
 ```
 
 ## 현재 구현 범위
@@ -107,5 +108,5 @@ demo@student.app / 123456
 - 현재 프론트엔드 기준 디렉터리는 `new_fronted` 입니다.
 - 백엔드 기본 포트는 `8080`, 프론트엔드 개발 서버 기본 포트는 `5173` 입니다.
 - 프론트엔드 API 기본 경로는 `/api/v1` 입니다.
-- `frontend` 와 `adminFrontend` 는 저장소에 남아 있지만, 현재 구현/연동/검수 기준은 아닙니다.
+- `frontend` 는 과거 프론트엔드 디렉터리이며, 현재 구현/연동/검수 기준이 아닙니다.
 - `new_fronted/dist/`, `new_fronted/mobile-builds/`, `backend/bin/`, `backend/uploads/` 는 배포 산출물 또는 런타임 파일이므로 Git 추적 대상에서 제외합니다.

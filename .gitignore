@@ -22,3 +22,8 @@ build/
 # Runtime/generated backend files
 /backend/bin/
 /backend/uploads/
+
+# Local workspace notes
+/agent.md
+/agent/
+/.codex-artifacts/
