@@ -16,6 +16,8 @@ build/
 /new_fronted/node_modules/
 /new_fronted/.next/
 /new_fronted/out/
+/new_fronted/dist/
+/new_fronted/mobile-builds/
 
 # Runtime/generated backend files
 /backend/bin/

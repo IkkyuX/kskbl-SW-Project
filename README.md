@@ -1,34 +1,35 @@
-# 留学生社区平台
+# 유학생 커뮤니티 플랫폼
 
-本项目是面向留学生的社区与社交平台。当前一切前端开发、对接和验收均以 `new_fronted` 为准。
+이 프로젝트는 유학생을 위한 커뮤니티 및 소셜 플랫폼입니다. 현재 프론트엔드 개발, API 연동, 테스트, 검수의 기준 디렉터리는 모두 `new_fronted` 입니다.
 
-## 目录结构
+## 디렉터리 구조
 
 ```text
-backend/        Kotlin + Spring Boot 后端服务
-new_fronted/    当前唯一基准前端，Vite + React + TypeScript
-database/       MySQL 建表脚本
-doc/            策划案与对接文档
-frontend/       历史前端目录，当前不作为对接基准
-adminFrontend/  历史管理端原型，当前不作为对接基准
+backend/        Kotlin + Spring Boot 백엔드 서비스
+new_fronted/    현재 기준 프론트엔드, Vite + React + TypeScript
+database/       MySQL 스키마 스크립트
+doc/            기획 문서 및 협업 문서
+frontend/       과거 프론트엔드 디렉터리, 현재 기준 아님
+adminFrontend/  과거 관리자 프론트엔드 프로토타입, 현재 기준 아님
 ```
 
-## 当前实现范围
+## 현재 구현 범위
 
-当前后端已包含账号登录、用户资料、学生认证、匹配推荐、社区帖子、圈子、消息会话、攻略文章等模块。`new_fronted` 已开始接入后端接口，消息、联系人、用户资料和部分圈子数据已从接口读取，其余页面仍保留部分 mock 数据。
+백엔드는 로그인, 사용자 프로필, 학생 인증, 매칭 추천, 커뮤니티 게시글, 서클, 메시지 대화, 공략/가이드 문서 등의 모듈을 포함하고 있습니다.  
+`new_fronted` 는 이미 일부 백엔드 API 와 연결되어 있으며, 메시지, 연락처, 사용자 프로필, 일부 서클 데이터는 실제 API 에서 읽어옵니다. 그 외 일부 화면은 아직 목업 데이터가 남아 있습니다.
 
-## 项目启动
+## 실행 방법
 
-### 1. 启动后端
+### 1. 백엔드 실행
 
-默认配置连接本地 MySQL 数据库 `student_community`：
+기본 설정은 로컬 MySQL 데이터베이스 `student_community` 를 사용합니다.
 
 ```bash
 cd backend
 ./gradlew bootRun
 ```
 
-如需启用真实邮箱验证码，请先配置 SMTP 环境变量后再启动后端：
+실제 이메일 인증 코드를 사용하려면 SMTP 환경 변수를 먼저 설정한 뒤 백엔드를 실행해야 합니다.
 
 ```bash
 export MAIL_HOST=smtp.qq.com
@@ -38,19 +39,19 @@ export MAIL_PASSWORD=your_smtp_auth_code
 export MAIL_FROM=your_account@qq.com
 ```
 
-后端默认地址：
+백엔드 기본 주소:
 
 ```text
 http://localhost:8080
 ```
 
-Swagger 地址：
+Swagger 주소:
 
 ```text
 http://localhost:8080/swagger-ui.html
 ```
 
-### 2. 启动前端 `new_fronted`
+### 2. 프론트엔드 `new_fronted` 실행
 
 ```bash
 cd new_fronted
@@ -58,52 +59,53 @@ npm install
 npm run dev
 ```
 
-Vite 默认地址：
+Vite 기본 주소:
 
 ```text
 http://localhost:5173
 ```
 
-`new_fronted/vite.config.ts` 已配置代理，前端请求 `/api/*` 会转发到：
+`new_fronted/vite.config.ts` 에 프록시가 설정되어 있으므로 `/api/*` 요청은 아래 백엔드 주소로 전달됩니다.
 
 ```text
 http://localhost:8080
 ```
 
-### 3. 构建前端
+### 3. 프론트엔드 빌드
 
 ```bash
 cd new_fronted
 npm run build
 ```
 
-构建产物位于：
+빌드 결과물은 다음 위치에 생성됩니다.
 
 ```text
 new_fronted/dist/
 ```
 
-## 本地登录说明
+## 로컬 로그인 안내
 
-`new_fronted` 启动后默认进入登录页，需要手动登录。
+`new_fronted` 실행 후 기본 진입 화면은 로그인 페이지입니다.
 
-当前可用于本地联调的测试账号：
+로컬 연동 테스트에 사용할 수 있는 기본 계정:
 
 ```text
 demo@student.app / 123456
 ```
 
-如需测试其他账号，可直接在登录页输入对应邮箱和密码。
+다른 계정을 테스트하려면 로그인 화면에서 해당 이메일과 비밀번호를 직접 입력하면 됩니다.
 
-认证相关验证码场景已经复用到 3 条链路：
+인증 코드는 현재 아래 3개 시나리오에서 재사용됩니다.
 
-- 注册：`POST /api/v1/auth/send-code` with `scene=REGISTER`，随后 `POST /api/v1/auth/register`
-- 验证码登录：`POST /api/v1/auth/send-code` with `scene=LOGIN`，随后 `POST /api/v1/auth/login/code`
-- 重置密码：`POST /api/v1/auth/send-code` with `scene=RESET_PASSWORD`，随后 `POST /api/v1/auth/reset-password`
+- 회원가입: `POST /api/v1/auth/send-code` with `scene=REGISTER`, 이후 `POST /api/v1/auth/register`
+- 인증코드 로그인: `POST /api/v1/auth/send-code` with `scene=LOGIN`, 이후 `POST /api/v1/auth/login/code`
+- 비밀번호 재설정: `POST /api/v1/auth/send-code` with `scene=RESET_PASSWORD`, 이후 `POST /api/v1/auth/reset-password`
 
-## 注意事项
+## 주의 사항
 
-- 一切前端工作以 `new_fronted` 为准。
-- 后端默认端口是 `8080`，前端开发服务器默认端口是 `5173`。
-- 前端接口基础路径默认是 `/api/v1`。
-- `frontend` 和 `adminFrontend` 仍在仓库中，但当前不作为实现、对接或验收基准。
+- 현재 프론트엔드 기준 디렉터리는 `new_fronted` 입니다.
+- 백엔드 기본 포트는 `8080`, 프론트엔드 개발 서버 기본 포트는 `5173` 입니다.
+- 프론트엔드 API 기본 경로는 `/api/v1` 입니다.
+- `frontend` 와 `adminFrontend` 는 저장소에 남아 있지만, 현재 구현/연동/검수 기준은 아닙니다.
+- `new_fronted/dist/`, `new_fronted/mobile-builds/`, `backend/bin/`, `backend/uploads/` 는 배포 산출물 또는 런타임 파일이므로 Git 추적 대상에서 제외합니다.
