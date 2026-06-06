@@ -6,6 +6,7 @@ USE student_community;
 
 CREATE TABLE IF NOT EXISTS users (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  u_number BIGINT UNIQUE,
   email VARCHAR(128) UNIQUE,
   phone VARCHAR(32) UNIQUE,
   password_hash VARCHAR(255) NOT NULL,
@@ -25,6 +26,7 @@ CREATE TABLE IF NOT EXISTS user_profiles (
   school_code VARCHAR(64),
   major VARCHAR(128),
   grade VARCHAR(32),
+  level INT NOT NULL DEFAULT 1,
   languages VARCHAR(255),
   bio TEXT,
   privacy_level VARCHAR(32) NOT NULL DEFAULT 'PUBLIC',
@@ -56,6 +58,33 @@ CREATE TABLE IF NOT EXISTS user_tags (
   CONSTRAINT fk_user_tags_tag FOREIGN KEY (tag_id) REFERENCES tags(id)
 );
 
+CREATE TABLE IF NOT EXISTS friendships (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  user_id BIGINT NOT NULL,
+  friend_user_id BIGINT NOT NULL,
+  status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_friendships_user_friend (user_id, friend_user_id),
+  CONSTRAINT fk_friendships_user FOREIGN KEY (user_id) REFERENCES users(id),
+  CONSTRAINT fk_friendships_friend_user FOREIGN KEY (friend_user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS friend_requests (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  requester_user_id BIGINT NOT NULL,
+  receiver_user_id BIGINT NOT NULL,
+  status VARCHAR(32) NOT NULL DEFAULT 'PENDING',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_friend_requests_pair (requester_user_id, receiver_user_id),
+  KEY idx_friend_requests_requester_updated (requester_user_id, updated_at),
+  KEY idx_friend_requests_receiver_updated (receiver_user_id, updated_at),
+  KEY idx_friend_requests_status_updated (status, updated_at),
+  CONSTRAINT fk_friend_requests_requester FOREIGN KEY (requester_user_id) REFERENCES users(id),
+  CONSTRAINT fk_friend_requests_receiver FOREIGN KEY (receiver_user_id) REFERENCES users(id)
+);
+
 CREATE TABLE IF NOT EXISTS verification_records (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   user_id BIGINT NOT NULL,
@@ -68,6 +97,19 @@ CREATE TABLE IF NOT EXISTS verification_records (
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_verification_user FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS email_verification_codes (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  email VARCHAR(128) NOT NULL,
+  scene VARCHAR(32) NOT NULL,
+  code_hash VARCHAR(255) NOT NULL,
+  status VARCHAR(32) NOT NULL DEFAULT 'SENT',
+  expires_at DATETIME NOT NULL,
+  used_at DATETIME NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY idx_email_verification_codes_lookup (email, scene, created_at)
 );
 
 CREATE TABLE IF NOT EXISTS match_recommendations (
@@ -85,6 +127,10 @@ CREATE TABLE IF NOT EXISTS match_recommendations (
 CREATE TABLE IF NOT EXISTS conversations (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   conversation_type VARCHAR(32) NOT NULL DEFAULT 'PRIVATE',
+  group_number BIGINT UNIQUE NULL,
+  group_name VARCHAR(128) NULL,
+  group_description TEXT NULL,
+  group_avatar_url VARCHAR(255) NULL,
   last_message_id BIGINT NULL,
   last_message_at DATETIME NULL,
   status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE',
@@ -97,6 +143,7 @@ CREATE TABLE IF NOT EXISTS conversation_members (
   conversation_id BIGINT NOT NULL,
   user_id BIGINT NOT NULL,
   unread_count INT NOT NULL DEFAULT 0,
+  is_admin TINYINT(1) NOT NULL DEFAULT 0,
   UNIQUE KEY uk_conversation_member (conversation_id, user_id),
   CONSTRAINT fk_conversation_members_conversation FOREIGN KEY (conversation_id) REFERENCES conversations(id),
   CONSTRAINT fk_conversation_members_user FOREIGN KEY (user_id) REFERENCES users(id)
@@ -123,6 +170,33 @@ CREATE TABLE IF NOT EXISTS boards (
   name_en VARCHAR(64) NOT NULL,
   status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE',
   sort_order INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS circles (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  name_zh VARCHAR(64) NOT NULL,
+  icon_emoji VARCHAR(255) NOT NULL DEFAULT '⭐',
+  description TEXT NOT NULL,
+  owner_user_id BIGINT NOT NULL,
+  announcement TEXT NOT NULL,
+  member_count INT NOT NULL DEFAULT 0,
+  post_count INT NOT NULL DEFAULT 0,
+  hot_score INT NOT NULL DEFAULT 0,
+  status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_circles_owner FOREIGN KEY (owner_user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS circle_members (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  circle_id BIGINT NOT NULL,
+  user_id BIGINT NOT NULL,
+  unread_count INT NOT NULL DEFAULT 0,
+  is_admin TINYINT(1) NOT NULL DEFAULT 0,
+  joined_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_circle_member (circle_id, user_id),
+  CONSTRAINT fk_circle_members_circle FOREIGN KEY (circle_id) REFERENCES circles(id),
+  CONSTRAINT fk_circle_members_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS posts (
@@ -216,6 +290,7 @@ CREATE TABLE IF NOT EXISTS block_records (
 );
 
 CREATE INDEX idx_match_recommendations_user_time ON match_recommendations(user_id, recommended_at);
+CREATE INDEX idx_friendships_user_status ON friendships(user_id, status);
 CREATE INDEX idx_messages_conversation_time ON messages(conversation_id, sent_at);
 CREATE INDEX idx_posts_board_time ON posts(board_id, created_at);
 CREATE INDEX idx_articles_category_status_time ON articles(category_id, status, updated_at);

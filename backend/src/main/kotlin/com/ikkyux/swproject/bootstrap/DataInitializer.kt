@@ -22,9 +22,11 @@ import com.ikkyux.swproject.message.repository.ConversationMemberRepository
 import com.ikkyux.swproject.message.repository.ConversationRepository
 import com.ikkyux.swproject.message.repository.MessageRepository
 import com.ikkyux.swproject.user.entity.TagEntity
+import com.ikkyux.swproject.user.entity.FriendshipEntity
 import com.ikkyux.swproject.user.entity.UserEntity
 import com.ikkyux.swproject.user.entity.UserProfileEntity
 import com.ikkyux.swproject.user.entity.UserTagEntity
+import com.ikkyux.swproject.user.repository.FriendshipRepository
 import com.ikkyux.swproject.user.repository.TagRepository
 import com.ikkyux.swproject.user.repository.UserProfileRepository
 import com.ikkyux.swproject.user.repository.UserRepository
@@ -39,12 +41,25 @@ import java.time.LocalDateTime
 @Configuration
 class DataInitializer {
 
+    private data class TestUserSeed(
+        val uNumber: Long,
+        val email: String,
+        val nickname: String,
+        val schoolCode: String,
+        val major: String,
+        val languages: String,
+        val bio: String,
+        val avatarPath: String,
+        val tagNames: List<String>,
+    )
+
     @Bean
     fun seedData(
         userRepository: UserRepository,
         userProfileRepository: UserProfileRepository,
         tagRepository: TagRepository,
         userTagRepository: UserTagRepository,
+        friendshipRepository: FriendshipRepository,
         boardRepository: BoardRepository,
         postRepository: PostRepository,
         articleCategoryRepository: ArticleCategoryRepository,
@@ -56,10 +71,11 @@ class DataInitializer {
         conversationMemberRepository: ConversationMemberRepository,
         messageRepository: MessageRepository,
         passwordEncoder: PasswordEncoder,
-    ) = CommandLineRunner {
+        ) = CommandLineRunner {
         if (userRepository.count() == 0L) {
             val demoUser = userRepository.save(
                 UserEntity(
+                    uNumber = 10000001L,
                     email = "demo@student.app",
                     passwordHash = passwordEncoder.encode("123456"),
                     registerType = RegisterType.EMAIL
@@ -67,14 +83,130 @@ class DataInitializer {
             )
             val friendUser = userRepository.save(
                 UserEntity(
+                    uNumber = 10000002L,
                     email = "lina@student.app",
                     passwordHash = passwordEncoder.encode("123456"),
                     registerType = RegisterType.EMAIL
                 )
             )
 
-            userProfileRepository.save(UserProfileEntity(userId = demoUser.id, nickname = "Demo User", schoolCode = "KYUNGHEE", major = "Computer Science", languages = "Chinese,Korean,English", bio = "新来的留学生，希望认识同校朋友。"))
-            userProfileRepository.save(UserProfileEntity(userId = friendUser.id, nickname = "Lina", schoolCode = "KOREA", major = "Business", languages = "Chinese,English", bio = "也刚到韩国，想认识一些新朋友。"))
+            userProfileRepository.save(UserProfileEntity(userId = demoUser.id, nickname = "Demo User", level = 12, schoolCode = "KYUNGHEE", major = "Computer Science", languages = "Chinese,Korean,English", bio = "新来的留学生，希望认识同校朋友。"))
+            userProfileRepository.save(UserProfileEntity(userId = friendUser.id, nickname = "Lina", level = 8, schoolCode = "KOREA", major = "Business", languages = "Chinese,English", bio = "也刚到韩国，想认识一些新朋友。"))
+        }
+
+        val testUsers = listOf(
+            TestUserSeed(
+                uNumber = 10000003L,
+                email = "soyoung@test.local",
+                nickname = "SoYoung",
+                schoolCode = "SEOUL",
+                major = "Media Communication",
+                languages = "Korean,English",
+                bio = "平时爱逛咖啡店，也喜欢拍照记录生活。",
+                avatarPath = "/uploads/avatars/test-user-01.webp",
+                tagNames = listOf("学习", "找饭搭子", "刚到韩国"),
+            ),
+            TestUserSeed(
+                uNumber = 10000004L,
+                email = "mingyu@test.local",
+                nickname = "Mingyu",
+                schoolCode = "YONSEI",
+                major = "Computer Science",
+                languages = "Chinese,Korean,English",
+                bio = "白天上课，晚上打游戏，周末会去探店。",
+                avatarPath = "/uploads/avatars/test-user-02.webp",
+                tagNames = listOf("运动", "找学习搭子", "选课中"),
+            ),
+            TestUserSeed(
+                uNumber = 10000005L,
+                email = "hana@test.local",
+                nickname = "Hana",
+                schoolCode = "KOREA",
+                major = "Design",
+                languages = "Japanese,Korean,English",
+                bio = "喜欢插画、展览和小众风格的街区。",
+                avatarPath = "/uploads/avatars/test-user-03.webp",
+                tagNames = listOf("学习", "找饭搭子", "选课中"),
+            ),
+            TestUserSeed(
+                uNumber = 10000006L,
+                email = "junho@test.local",
+                nickname = "Junho",
+                schoolCode = "HANYANG",
+                major = "Business",
+                languages = "Korean,Chinese",
+                bio = "常年在找饭搭子，顺便研究二手和兼职信息。",
+                avatarPath = "/uploads/avatars/test-user-04.webp",
+                tagNames = listOf("运动", "找饭搭子", "刚到韩国"),
+            ),
+            TestUserSeed(
+                uNumber = 10000007L,
+                email = "yuki@test.local",
+                nickname = "Yuki",
+                schoolCode = "EWHA",
+                major = "International Studies",
+                languages = "Japanese,Korean",
+                bio = "想认识更多留学生朋友，也会分享学习资料。",
+                avatarPath = "/uploads/avatars/test-user-05.webp",
+                tagNames = listOf("学习", "找学习搭子", "刚到韩国"),
+            ),
+            TestUserSeed(
+                uNumber = 10000008L,
+                email = "chenxi@test.local",
+                nickname = "Chenxi",
+                schoolCode = "SUNGKYUNKWAN",
+                major = "Economics",
+                languages = "Chinese,Korean,English",
+                bio = "最近在熟悉首尔生活，周末会出去拍街景。",
+                avatarPath = "/uploads/avatars/test-user-06.webp",
+                tagNames = listOf("运动", "找饭搭子", "选课中"),
+            ),
+            TestUserSeed(
+                uNumber = 10000009L,
+                email = "minseo@test.local",
+                nickname = "Minseo",
+                schoolCode = "HUFS",
+                major = "Tourism",
+                languages = "Korean,English",
+                bio = "喜欢旅行、徒步和收集城市里的小店。",
+                avatarPath = "/uploads/avatars/test-user-07.webp",
+                tagNames = listOf("运动", "找学习搭子", "刚到韩国"),
+            ),
+        )
+
+        testUsers.forEach { seed ->
+            val user = userRepository.findByEmail(seed.email) ?: userRepository.save(
+                UserEntity(
+                    uNumber = seed.uNumber,
+                    email = seed.email,
+                    passwordHash = passwordEncoder.encode("123456"),
+                    registerType = RegisterType.EMAIL,
+                )
+            )
+            if (user.uNumber == null) {
+                user.uNumber = seed.uNumber
+                userRepository.save(user)
+            }
+
+            val profile = userProfileRepository.findByUserId(user.id!!) ?: UserProfileEntity(userId = user.id)
+            profile.nickname = seed.nickname
+            profile.avatarUrl = seed.avatarPath
+            profile.schoolCode = seed.schoolCode
+            profile.major = seed.major
+            profile.languages = seed.languages
+            profile.bio = seed.bio
+            profile.level = profile.level.coerceAtLeast(1)
+            profile.updatedAt = LocalDateTime.now()
+            userProfileRepository.save(profile)
+        }
+
+        var nextLegacyUNumber = userRepository.findAll()
+            .mapNotNull { it.uNumber }
+            .maxOrNull() ?: 60000L
+        userRepository.findAll().filter { it.uNumber == null }.forEach { user ->
+            nextLegacyUNumber += 1
+            user.uNumber = nextLegacyUNumber
+            userRepository.save(user)
         }
 
         if (tagRepository.count() == 0L) {
@@ -90,7 +222,20 @@ class DataInitializer {
             )
         }
 
+        val tagsByName = tagRepository.findAll().associateBy { it.nameZh }
+
         val demoUser = userRepository.findByEmail("demo@student.app") ?: return@CommandLineRunner
+        fun ensureFriendship(userId: Long, friendUserId: Long) {
+            if (!friendshipRepository.existsByUserIdAndFriendUserIdAndStatus(userId, friendUserId)) {
+                friendshipRepository.save(FriendshipEntity(userId = userId, friendUserId = friendUserId))
+            }
+        }
+
+        userRepository.findByEmail("lina@student.app")?.let { friendUser ->
+            ensureFriendship(demoUser.id!!, friendUser.id!!)
+            ensureFriendship(friendUser.id!!, demoUser.id!!)
+        }
+
         if (userTagRepository.findByUserId(demoUser.id!!).isEmpty()) {
             tagRepository.findByTagTypeAndStatusOrderBySortOrderAsc("SCENE").firstOrNull()?.let {
                 userTagRepository.save(UserTagEntity(userId = demoUser.id!!, tagId = it.id!!))
@@ -100,6 +245,27 @@ class DataInitializer {
             }
         }
 
+        val friendUser = userRepository.findByEmail("lina@student.app")
+        friendUser?.id?.let { userId ->
+            if (userTagRepository.findByUserId(userId).isEmpty()) {
+                listOf("学习", "找饭搭子", "刚到韩国").forEach { tagName ->
+                    tagsByName[tagName]?.id?.let { tagId ->
+                        userTagRepository.save(UserTagEntity(userId = userId, tagId = tagId))
+                    }
+                }
+            }
+        }
+
+        testUsers.forEach { seed ->
+            val user = userRepository.findByEmail(seed.email) ?: return@forEach
+            if (userTagRepository.findByUserId(user.id!!).isEmpty()) {
+                seed.tagNames.forEach { tagName ->
+                    tagsByName[tagName]?.id?.let { tagId ->
+                        userTagRepository.save(UserTagEntity(userId = user.id!!, tagId = tagId))
+                    }
+                }
+            }
+        }
         if (boardRepository.count() == 0L) {
             boardRepository.saveAll(
                 listOf(
@@ -208,6 +374,21 @@ class DataInitializer {
                 )
             )
         }
+        val friendUserForPosts = userRepository.findByEmail("lina@student.app")
+        if (friendUserForPosts != null && !postRepository.existsByTitle("今天在安国散步，发现一家很安静的书店")) {
+            postRepository.save(
+                PostEntity(
+                    userId = friendUserForPosts.id!!,
+                    boardId = boardsByName["交友活动"]?.id ?: boardsByName.values.first().id!!,
+                    title = "今天在安国散步，发现一家很安静的书店",
+                    content = "下午下课后去安国附近走了一圈，路上有很多小店适合慢慢逛。下次想约朋友一起去拍照和喝咖啡。",
+                    anonymous = false,
+                    likeCount = 12,
+                    commentCount = 2,
+                    favoriteCount = 5
+                )
+            )
+        }
 
         if (articleCategoryRepository.count() == 0L) {
             articleCategoryRepository.saveAll(
@@ -237,6 +418,33 @@ class DataInitializer {
 
         if (matchRecommendationRepository.count() == 0L) {
             val friendUser = userRepository.findByEmail("lina@student.app") ?: return@CommandLineRunner
+            val suggestedUser = userRepository.findByEmail("mina@student.app") ?: userRepository.save(
+                UserEntity(
+                    email = "mina@student.app",
+                    passwordHash = passwordEncoder.encode("123456"),
+                    registerType = RegisterType.EMAIL
+                )
+            )
+            if (userProfileRepository.findByUserId(suggestedUser.id!!) == null) {
+                userProfileRepository.save(
+                    UserProfileEntity(
+                        userId = suggestedUser.id,
+                        nickname = "Mina",
+                        schoolCode = "YONSEI",
+                        major = "Design",
+                        languages = "Korean,English",
+                        bio = "喜欢逛展、拍照和喝咖啡，最近在熟悉首尔。",
+                    )
+                )
+            }
+            matchRecommendationRepository.save(
+                MatchRecommendationEntity(
+                    userId = demoUser.id!!,
+                    targetUserId = suggestedUser.id!!,
+                    matchScore = BigDecimal("94.8"),
+                    matchReason = "同在韩国生活，兴趣标签也很接近"
+                )
+            )
             matchRecommendationRepository.save(
                 MatchRecommendationEntity(
                     userId = demoUser.id!!,
@@ -250,29 +458,29 @@ class DataInitializer {
         if (circleRepository.count() == 0L) {
             val circles = circleRepository.saveAll(
                 listOf(
-                    CircleEntity(nameZh = "首尔大学留学生", iconEmoji = "🎓", description = "首尔大学在读留学生交流圈", memberCount = 2340, postCount = 156, hotScore = 95),
-                    CircleEntity(nameZh = "美食探店小分队", iconEmoji = "🍜", description = "发现首尔好吃的餐厅和美食", memberCount = 1892, postCount = 423, hotScore = 92),
-                    CircleEntity(nameZh = "弘大周末局", iconEmoji = "🎉", description = "周末一起去弘大玩耍！", memberCount = 856, postCount = 89, hotScore = 70),
-                    CircleEntity(nameZh = "打工情报站", iconEmoji = "💼", description = "分享打工信息、时薪、经验", memberCount = 1245, postCount = 234, hotScore = 88),
+                    CircleEntity(nameZh = "首尔大学留学生", iconEmoji = "🎓", description = "首尔大学在读留学生交流圈", ownerUserId = demoUser.id!!, announcement = "欢迎新成员入圈，发言前请先阅读校园生活与签证经验置顶帖。", memberCount = 2340, postCount = 156, hotScore = 95),
+                    CircleEntity(nameZh = "美食探店小分队", iconEmoji = "🍜", description = "发现首尔好吃的餐厅和美食", ownerUserId = demoUser.id!!, announcement = "欢迎分享近期探店体验，广告与代购内容会被移除。", memberCount = 1892, postCount = 423, hotScore = 92),
+                    CircleEntity(nameZh = "弘大周末局", iconEmoji = "🎉", description = "周末一起去弘大玩耍！", ownerUserId = demoUser.id!!, announcement = "欢迎加入圈子，请文明交流并尽量提供真实有用的信息。", memberCount = 856, postCount = 89, hotScore = 70),
+                    CircleEntity(nameZh = "打工情报站", iconEmoji = "💼", description = "分享打工信息、时薪、经验", ownerUserId = demoUser.id!!, announcement = "请在发布岗位前确认时薪、地点与签证要求，避免无效信息。", memberCount = 1245, postCount = 234, hotScore = 88),
                 )
             )
             circles.firstOrNull { it.nameZh == "美食探店小分队" }?.let {
                 circleMemberRepository.save(
-                    CircleMemberEntity(circleId = it.id!!, userId = demoUser.id!!, unreadCount = 12, isAdmin = false)
+                    CircleMemberEntity(circleId = it.id!!, userId = demoUser.id!!, unreadCount = 12, isAdmin = true)
                 )
             }
         }
 
-        val friendUser = userRepository.findByEmail("lina@student.app")
+        val circleFriendUser = userRepository.findByEmail("lina@student.app")
         circleRepository.findAll().firstOrNull { it.nameZh == "美食探店小分队" }?.let { foodCircle ->
             if (circleMemberRepository.findByCircleIdAndUserId(foodCircle.id!!, demoUser.id!!) == null) {
                 circleMemberRepository.save(
-                    CircleMemberEntity(circleId = foodCircle.id!!, userId = demoUser.id!!, unreadCount = 12, isAdmin = false)
+                    CircleMemberEntity(circleId = foodCircle.id!!, userId = demoUser.id!!, unreadCount = 12, isAdmin = true)
                 )
             }
-            if (friendUser != null && circleMemberRepository.findByCircleIdAndUserId(foodCircle.id!!, friendUser.id!!) == null) {
+            if (circleFriendUser != null && circleMemberRepository.findByCircleIdAndUserId(foodCircle.id!!, circleFriendUser.id!!) == null) {
                 circleMemberRepository.save(
-                    CircleMemberEntity(circleId = foodCircle.id!!, userId = friendUser.id!!, unreadCount = 0, isAdmin = true)
+                    CircleMemberEntity(circleId = foodCircle.id!!, userId = circleFriendUser.id!!, unreadCount = 0, isAdmin = true)
                 )
             }
         }
@@ -280,13 +488,28 @@ class DataInitializer {
         circleRepository.findAll().firstOrNull { it.nameZh == "首尔大学留学生" }?.let { schoolCircle ->
             if (circleMemberRepository.findByCircleIdAndUserId(schoolCircle.id!!, demoUser.id!!) == null) {
                 circleMemberRepository.save(
-                    CircleMemberEntity(circleId = schoolCircle.id!!, userId = demoUser.id!!, unreadCount = 0, isAdmin = false)
+                    CircleMemberEntity(circleId = schoolCircle.id!!, userId = demoUser.id!!, unreadCount = 0, isAdmin = true)
                 )
             }
         }
 
+        circleRepository.findAll().forEach { circle ->
+            if (circle.ownerUserId == 0L) {
+                circle.ownerUserId = demoUser.id!!
+            }
+            if (circle.announcement.isBlank()) {
+                circle.announcement = when {
+                    circle.nameZh.contains("大学") -> "欢迎新成员入圈，发言前请先阅读校园生活与签证经验置顶帖。"
+                    circle.nameZh.contains("美食") -> "欢迎分享近期探店体验，广告与代购内容会被移除。"
+                    circle.nameZh.contains("打工") -> "请在发布岗位前确认时薪、地点与签证要求，避免无效信息。"
+                    else -> "欢迎加入圈子，请文明交流并尽量提供真实有用的信息。"
+                }
+            }
+            circleRepository.save(circle)
+        }
+
         if (conversationRepository.count() == 0L) {
-            val friendUser = userRepository.findByEmail("lina@student.app") ?: return@CommandLineRunner
+            val chatFriendUser = userRepository.findByEmail("lina@student.app") ?: return@CommandLineRunner
             val conversation = conversationRepository.save(
                 ConversationEntity(
                     conversationType = "PRIVATE",
@@ -294,7 +517,7 @@ class DataInitializer {
                 )
             )
             conversationMemberRepository.save(ConversationMemberEntity(conversationId = conversation.id!!, userId = demoUser.id!!, unreadCount = 1))
-            conversationMemberRepository.save(ConversationMemberEntity(conversationId = conversation.id!!, userId = friendUser.id!!, unreadCount = 0))
+            conversationMemberRepository.save(ConversationMemberEntity(conversationId = conversation.id!!, userId = chatFriendUser.id!!, unreadCount = 0))
 
             val m1 = messageRepository.save(
                 MessageEntity(
@@ -307,7 +530,7 @@ class DataInitializer {
             messageRepository.save(
                 MessageEntity(
                     conversationId = conversation.id!!,
-                    senderId = friendUser.id!!,
+                    senderId = chatFriendUser.id!!,
                     content = "对呀，我最近也在熟悉学校和生活。",
                     sentAt = LocalDateTime.now().minusHours(3),
                 )
@@ -315,7 +538,7 @@ class DataInitializer {
             val last = messageRepository.save(
                 MessageEntity(
                     conversationId = conversation.id!!,
-                    senderId = friendUser.id!!,
+                    senderId = chatFriendUser.id!!,
                     content = "周末要不要一起去吃饭？",
                     sentAt = LocalDateTime.now().minusMinutes(15),
                 )

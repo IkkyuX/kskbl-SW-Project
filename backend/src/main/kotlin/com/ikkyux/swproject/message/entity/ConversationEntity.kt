@@ -13,6 +13,18 @@ class ConversationEntity(
     @Column(name = "conversation_type", nullable = false)
     var conversationType: String = "PRIVATE",
 
+    @Column(name = "group_number", unique = true)
+    var groupNumber: Long? = null,
+
+    @Column(name = "group_name")
+    var groupName: String? = null,
+
+    @Column(name = "group_description")
+    var groupDescription: String? = null,
+
+    @Column(name = "group_avatar_url")
+    var groupAvatarUrl: String? = null,
+
     @Column(name = "last_message_id")
     var lastMessageId: Long? = null,
 

@@ -19,6 +19,12 @@ class CircleEntity(
     @Column(nullable = false, columnDefinition = "TEXT")
     var description: String = "",
 
+    @Column(name = "owner_user_id", nullable = false)
+    var ownerUserId: Long = 0,
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    var announcement: String = "",
+
     @Column(name = "member_count", nullable = false)
     var memberCount: Int = 0,
 

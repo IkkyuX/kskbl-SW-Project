@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface PostCommentRepository : JpaRepository<PostCommentEntity, Long> {
     fun findAllByPostIdAndStatusOrderByCreatedAtAsc(postId: Long, status: String = "VISIBLE"): List<PostCommentEntity>
+    fun countByUserIdAndStatus(userId: Long, status: String = "VISIBLE"): Long
 }

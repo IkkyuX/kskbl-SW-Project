@@ -17,6 +17,7 @@ class SecurityConfig(
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
+            .cors(Customizer.withDefaults())
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
@@ -25,7 +26,11 @@ class SecurityConfig(
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                     "/actuator/health",
-                    "/api/v1/auth/**"
+                    "/api/v1/auth/login",
+                    "/api/v1/auth/login/code",
+                    "/api/v1/auth/register",
+                    "/api/v1/auth/reset-password",
+                    "/api/v1/auth/send-code",
                 ).permitAll()
                 it.anyRequest().permitAll()
             }

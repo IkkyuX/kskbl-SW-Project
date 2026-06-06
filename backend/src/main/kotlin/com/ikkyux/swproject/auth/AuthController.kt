@@ -4,6 +4,7 @@ import com.ikkyux.swproject.common.ApiResponse
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -22,14 +23,17 @@ class AuthController(
     fun login(@Valid @RequestBody request: LoginRequest): ApiResponse<AuthResponse> =
         ApiResponse.success(authService.login(request))
 
+    @PostMapping("/login/code")
+    fun loginWithCode(@Valid @RequestBody request: LoginWithCodeRequest): ApiResponse<AuthResponse> =
+        ApiResponse.success(authService.loginWithCode(request))
+
+    @PostMapping("/reset-password")
+    fun resetPassword(@Valid @RequestBody request: ResetPasswordRequest): ApiResponse<Map<String, String>> =
+        ApiResponse.success(authService.resetPassword(request))
+
     @GetMapping("/me")
-    fun me(): ApiResponse<Map<String, Any>> =
-        ApiResponse.success(
-            mapOf(
-                "id" to 1,
-                "email" to "demo@student.app",
-                "nickname" to "Demo User",
-                "status" to "ACTIVE"
-            )
-        )
+    fun me(
+        @RequestAttribute("currentUserId", required = false) requestUserId: Long?,
+    ): ApiResponse<AuthUserResponse> =
+        ApiResponse.success(authService.me(requestUserId ?: throw IllegalArgumentException("请先登录")))
 }

@@ -1,0 +1,116 @@
+@import './fonts.css';
+@import './tailwind.css';
+@import './theme.css';
+
+/* Custom Glassmorphism and QQ-style aesthetics */
+@layer base {
+  body {
+    @apply min-h-dvh overflow-x-hidden;
+    background: var(--background);
+  }
+}
+
+@layer utilities {
+  .theme-wallpaper {
+    background-image: var(--theme-wallpaper);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: var(--theme-wallpaper-opacity, 1);
+  }
+
+  .theme-mobile-wallpaper {
+    background-image: var(--theme-mobile-wallpaper);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: var(--theme-wallpaper-opacity, 1);
+  }
+
+  .theme-panel-texture {
+    background-image: var(--theme-panel-texture);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: var(--theme-panel-texture-opacity, 0.12);
+    mix-blend-mode: soft-light;
+  }
+
+  .theme-accent-texture {
+    background-image: var(--theme-accent-texture);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: var(--theme-accent-texture-opacity, 0.08);
+    mix-blend-mode: screen;
+  }
+
+  .theme-noise {
+    background-image:
+      linear-gradient(transparent 0%, rgba(255, 255, 255, 0.035) 50%, transparent 100%),
+      repeating-linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.03) 0,
+        rgba(255, 255, 255, 0.03) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+    background-size: cover;
+    opacity: 0.14;
+    mix-blend-mode: overlay;
+  }
+
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .avatar-badge {
+    position: absolute;
+    z-index: 30;
+    pointer-events: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+  }
+
+  .avatar-badge-top-right {
+    top: 0;
+    right: 0;
+  }
+
+  .avatar-badge-bottom-right {
+    right: 0;
+    bottom: 0;
+  }
+
+  .avatar-badge-bottom-left {
+    bottom: 0;
+    left: 0;
+  }
+  
+  .text-glow {
+    text-shadow: 0 0 20px rgba(34, 211, 238, 0.5);
+  }
+  
+  .qq-gradient {
+    background: linear-gradient(135deg, #12c2e9 0%, #c471ed 50%, #f64f59 100%);
+  }
+  
+  .scrollbar-hidden {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+}

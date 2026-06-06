@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ULink</string>
+    <string name="title_activity_main">ULink</string>
+    <string name="package_name">com.ikkyux.swproject</string>
+    <string name="custom_url_scheme">com.ikkyux.swproject</string>
+</resources>

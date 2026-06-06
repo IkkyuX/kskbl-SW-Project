@@ -1,0 +1,231 @@
+@custom-variant cyber (&:is(.cyber *));
+
+/* Default Theme - 白蓝纯渐变主题 */
+:root, .light {
+  --font-size: 16px;
+  --background: #f4f8ff;
+  --foreground: #172033;
+  --card: #ffffff;
+  --card-foreground: #172033;
+  --popover: #ffffff;
+  --popover-foreground: #172033;
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  --secondary: #eaf2ff;
+  --secondary-foreground: #172033;
+  --muted: #eef5ff;
+  --muted-foreground: #5d6c84;
+  --accent: #e4efff;
+  --accent-foreground: #1d4ed8;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #d6e3f7;
+  --input: #ffffff;
+  --input-background: #ffffff;
+  --switch-background: #bfd0e8;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: #2563eb;
+  --radius: 0.625rem;
+
+  /* Sidebar */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #172033;
+  --sidebar-primary: #2563eb;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eaf2ff;
+  --sidebar-accent-foreground: #1d4ed8;
+  --sidebar-border: #d6e3f7;
+  --sidebar-ring: #2563eb;
+
+  /* Chat specific */
+  --chat-bg: #eef5ff;
+  --chat-panel: #ffffff;
+  --chat-panel-border: #d6e3f7;
+  --chat-bubble-sent: #2563eb;
+  --chat-bubble-received: #eaf2ff;
+  --chat-bubble-received-text: #172033;
+  --chat-hover: #eaf2ff;
+  --chat-active: #dbeafe;
+  --button-primary: #2563eb;
+  --button-primary-foreground: #ffffff;
+  --button-secondary: #eaf2ff;
+  --button-secondary-foreground: #172033;
+  --button-surface: #f8fbff;
+  --button-border: #d6e3f7;
+  --theme-wallpaper: none;
+  --theme-mobile-wallpaper: none;
+  --theme-panel-texture: none;
+  --theme-accent-texture: none;
+  --theme-wallpaper-opacity: 0;
+  --theme-panel-texture-opacity: 0;
+  --theme-accent-texture-opacity: 0;
+}
+
+/* Luxury Theme - 黑金奢感主题 */
+.cyber {
+  --background: #050505;
+  --foreground: #f7e8c7;
+  --card: rgba(15, 11, 7, 0.9);
+  --card-foreground: #f7e8c7;
+  --popover: rgba(18, 14, 8, 0.96);
+  --popover-foreground: #f7e8c7;
+  --primary: #d4af37;
+  --primary-foreground: #120d06;
+  --secondary: rgba(212, 175, 55, 0.12);
+  --secondary-foreground: #f7e8c7;
+  --muted: rgba(255, 232, 162, 0.08);
+  --muted-foreground: #c5ae72;
+  --accent: rgba(255, 232, 162, 0.18);
+  --accent-foreground: #ffe8a2;
+  --destructive: #ef7a7a;
+  --destructive-foreground: #ffffff;
+  --border: rgba(255, 232, 162, 0.14);
+  --input: transparent;
+  --input-background: rgba(255, 255, 255, 0.04);
+  --switch-background: rgba(212, 175, 55, 0.2);
+  --ring: #d4af37;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+
+  /* Sidebar */
+  --sidebar: #090806;
+  --sidebar-foreground: #f7e8c7;
+  --sidebar-primary: #d4af37;
+  --sidebar-primary-foreground: #120d06;
+  --sidebar-accent: rgba(255, 232, 162, 0.08);
+  --sidebar-accent-foreground: #ffe8a2;
+  --sidebar-border: rgba(255, 232, 162, 0.12);
+  --sidebar-ring: #d4af37;
+
+  /* Chat specific */
+  --chat-bg: #050505;
+  --chat-panel: rgba(15, 11, 7, 0.78);
+  --chat-panel-border: rgba(255, 232, 162, 0.12);
+  --chat-bubble-sent: #d4af37;
+  --chat-bubble-received: rgba(255, 255, 255, 0.06);
+  --chat-bubble-received-text: #f7e8c7;
+  --chat-hover: rgba(255, 232, 162, 0.08);
+  --chat-active: rgba(212, 175, 55, 0.16);
+  --button-primary: #d4af37;
+  --button-primary-foreground: #120d06;
+  --button-secondary: rgba(255, 255, 255, 0.06);
+  --button-secondary-foreground: #f7e8c7;
+  --button-surface: rgba(255, 255, 255, 0.05);
+  --button-border: rgba(255, 232, 162, 0.14);
+  --theme-wallpaper: none;
+  --theme-mobile-wallpaper: none;
+  --theme-panel-texture: none;
+  --theme-accent-texture: none;
+  --theme-wallpaper-opacity: 0.9;
+  --theme-panel-texture-opacity: 0.18;
+  --theme-accent-texture-opacity: 0.12;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-button-primary: var(--button-primary);
+  --color-button-primary-foreground: var(--button-primary-foreground);
+  --color-button-secondary: var(--button-secondary);
+  --color-button-secondary-foreground: var(--button-secondary-foreground);
+  --color-button-surface: var(--button-surface);
+  --color-button-border: var(--button-border);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /**
+  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
+  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
+  */
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h4 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  label {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  input {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+}

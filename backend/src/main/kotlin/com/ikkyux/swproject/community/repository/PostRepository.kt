@@ -5,5 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface PostRepository : JpaRepository<PostEntity, Long> {
     fun findAllByStatusOrderByCreatedAtDesc(status: String = "PUBLISHED"): List<PostEntity>
+    fun countByUserIdAndStatus(userId: Long, status: String = "PUBLISHED"): Long
+    fun findAllByUserIdAndStatus(userId: Long, status: String = "PUBLISHED"): List<PostEntity>
     fun existsByTitle(title: String): Boolean
 }

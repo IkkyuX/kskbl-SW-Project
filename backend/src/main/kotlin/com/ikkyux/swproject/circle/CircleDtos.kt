@@ -1,5 +1,22 @@
 package com.ikkyux.swproject.circle
 
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
+
+data class CreateCircleRequest(
+    @field:NotBlank val name: String,
+    val icon: String? = null,
+    @field:NotBlank val description: String
+)
+
+data class UpdateCircleAnnouncementRequest(
+    @field:NotBlank val announcement: String
+)
+
+data class UpdateCircleAdminRequest(
+    @field:NotNull val targetUserId: Long
+)
+
 data class CircleSummaryResponse(
     val id: Long,
     val name: String,
@@ -21,6 +38,7 @@ data class JoinedCircleResponse(
     val lastMessage: String,
     val lastTime: String,
     val isAdmin: Boolean,
+    val isOwner: Boolean,
 )
 
 data class CircleDetailResponse(
@@ -34,6 +52,10 @@ data class CircleDetailResponse(
     val hot: Boolean,
     val joined: Boolean,
     val isAdmin: Boolean,
+    val isOwner: Boolean,
+    val canManageAdmins: Boolean,
+    val canDeleteCircle: Boolean,
+    val canManageContent: Boolean,
     val announcement: String,
 )
 
@@ -54,5 +76,6 @@ data class CircleMemberResponse(
     val bio: String,
     val avatarUrl: String?,
     val isAdmin: Boolean,
+    val isOwner: Boolean,
     val joinedAt: String,
 )

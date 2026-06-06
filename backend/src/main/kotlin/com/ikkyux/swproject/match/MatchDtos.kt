@@ -4,6 +4,7 @@ data class MatchRecommendationResponse(
     val id: Long,
     val userId: Long,
     val nickname: String,
+    val avatarUrl: String?,
     val school: String,
     val major: String,
     val languages: List<String>,

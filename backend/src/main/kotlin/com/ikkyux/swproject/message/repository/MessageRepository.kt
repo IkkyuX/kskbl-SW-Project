@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface MessageRepository : JpaRepository<MessageEntity, Long> {
     fun findAllByConversationIdOrderBySentAtAsc(conversationId: Long): List<MessageEntity>
     fun findTopByConversationIdOrderBySentAtDesc(conversationId: Long): MessageEntity?
+    fun countBySenderId(senderId: Long): Long
 }

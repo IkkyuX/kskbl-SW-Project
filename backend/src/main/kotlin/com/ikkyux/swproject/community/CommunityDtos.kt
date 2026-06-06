@@ -2,7 +2,9 @@ package com.ikkyux.swproject.community
 
 data class PostSummaryResponse(
     val id: Long,
+    val authorUserId: Long?,
     val authorName: String,
+    val authorAvatarUrl: String?,
     val boardName: String,
     val title: String,
     val summary: String,
@@ -16,13 +18,24 @@ data class PostSummaryResponse(
 data class PostCommentResponse(
     val id: Long,
     val authorName: String,
+    val authorAvatarUrl: String?,
     val content: String,
     val createdAt: String
 )
 
+data class BoardSummaryResponse(
+    val id: Long,
+    val nameZh: String,
+    val nameKo: String,
+    val nameEn: String,
+    val sortOrder: Int,
+)
+
 data class PostDetailResponse(
     val id: Long,
+    val authorUserId: Long?,
     val authorName: String,
+    val authorAvatarUrl: String?,
     val boardName: String,
     val title: String,
     val content: String,
@@ -41,6 +54,12 @@ data class CreatePostRequest(
     val content: String,
     val imageUrls: List<String> = emptyList(),
     val anonymous: Boolean
+)
+
+data class CreateMomentPostRequest(
+    val title: String? = null,
+    val content: String,
+    val imageUrls: List<String> = emptyList(),
 )
 
 data class CreateCommentRequest(

@@ -31,6 +31,9 @@ class UserProfileEntity(
 
     var grade: String? = null,
 
+    @Column(nullable = false)
+    var level: Int = 1,
+
     var languages: String? = null,
 
     @Column(columnDefinition = "TEXT")

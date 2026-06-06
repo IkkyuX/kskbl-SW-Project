@@ -7,6 +7,7 @@ import com.ikkyux.swproject.community.repository.PostCommentRepository
 import com.ikkyux.swproject.community.repository.PostRepository
 import com.ikkyux.swproject.user.repository.UserProfileRepository
 import com.ikkyux.swproject.user.repository.UserRepository
+import com.ikkyux.swproject.user.repository.FriendshipRepository
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.stereotype.Service
@@ -20,6 +21,7 @@ class CommunityService(
     private val boardRepository: BoardRepository,
     private val postRepository: PostRepository,
     private val postCommentRepository: PostCommentRepository,
+    private val friendshipRepository: FriendshipRepository,
 ) {
     private val objectMapper = jacksonObjectMapper()
 
@@ -28,6 +30,17 @@ class CommunityService(
         val profiles = userProfileRepository.findAll().associateBy { it.userId }
         return postRepository.findAllByStatusOrderByCreatedAtDesc().map { post -> buildPostSummary(post, boards, profiles) }
     }
+
+    fun getBoards(): List<BoardSummaryResponse> =
+        boardRepository.findByStatusOrderBySortOrderAsc().map {
+            BoardSummaryResponse(
+                id = it.id!!,
+                nameZh = it.nameZh,
+                nameKo = it.nameKo,
+                nameEn = it.nameEn,
+                sortOrder = it.sortOrder,
+            )
+        }
 
     fun getThemePosts(theme: String): List<PostSummaryResponse> {
         val boards = boardRepository.findAll().associateBy { it.id }
@@ -40,37 +53,38 @@ class CommunityService(
         return filtered.map { post -> buildPostSummary(post, boards, profiles) }
     }
 
-    @Transactional
-    fun createPost(request: CreatePostRequest): PostSummaryResponse {
-        val userId = userRepository.findFirstByOrderByIdAsc()?.id
-            ?: throw IllegalArgumentException("当前没有可用用户")
-        val board = boardRepository.findById(request.boardId)
-            .orElseThrow { IllegalArgumentException("板块不存在") }
-        val profile = userProfileRepository.findByUserId(userId)
-            ?: throw IllegalArgumentException("用户资料不存在") 
+    fun getMomentPosts(userId: Long): List<PostSummaryResponse> {
+        val friendIds = getDirectFriendUserIds(userId)
+        val visibleUserIds = friendIds + userId
+        val boards = boardRepository.findAll().associateBy { it.id }
+        val profiles = userProfileRepository.findAll().associateBy { it.userId }
+        return postRepository.findAllByStatusOrderByCreatedAtDesc()
+            .filter { post -> !post.anonymous && visibleUserIds.contains(post.userId) }
+            .map { post -> buildPostSummary(post, boards, profiles) }
+    }
 
-        val saved = postRepository.save(
-            PostEntity(
-                userId = userId,
-                boardId = board.id!!,
-                title = request.title,
-                content = request.content,
-                imageUrlsJson = encodeImageUrls(request.imageUrls),
-                anonymous = request.anonymous
-            )
+    @Transactional
+    fun createPost(userId: Long, request: CreatePostRequest): PostSummaryResponse =
+        createPostForUser(
+            userId = userId,
+            boardId = request.boardId,
+            title = request.title,
+            content = request.content,
+            imageUrls = request.imageUrls,
+            anonymous = request.anonymous,
         )
 
-        return PostSummaryResponse(
-            id = saved.id!!,
-            authorName = if (saved.anonymous) "匿名用户" else profile.nickname,
-            boardName = board.nameZh,
-            title = saved.title ?: "无标题帖子",
-            summary = saved.content.take(80),
-            imageUrls = decodeImageUrls(saved.imageUrlsJson),
-            likeCount = saved.likeCount,
-            commentCount = saved.commentCount,
-            favoriteCount = saved.favoriteCount,
-            createdAt = saved.createdAt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+    @Transactional
+    fun createMomentPost(userId: Long, request: CreateMomentPostRequest): PostSummaryResponse {
+        val boardId = boardRepository.findByStatusOrderBySortOrderAsc().firstOrNull()?.id
+            ?: throw IllegalArgumentException("默认板块不存在")
+        return createPostForUser(
+            userId = userId,
+            boardId = boardId,
+            title = request.title,
+            content = request.content,
+            imageUrls = request.imageUrls,
+            anonymous = false,
         )
     }
 
@@ -80,9 +94,11 @@ class CommunityService(
         val board = boardRepository.findById(post.boardId).orElseThrow { IllegalArgumentException("板块不存在") }
         val author = userProfileRepository.findByUserId(post.userId)
         val comments = postCommentRepository.findAllByPostIdAndStatusOrderByCreatedAtAsc(id).map { comment ->
+            val commentAuthor = userProfileRepository.findByUserId(comment.userId)
             PostCommentResponse(
                 id = comment.id!!,
-                authorName = userProfileRepository.findByUserId(comment.userId)?.nickname ?: "未知用户",
+                authorName = commentAuthor?.nickname ?: "未知用户",
+                authorAvatarUrl = commentAuthor?.avatarUrl,
                 content = comment.content,
                 createdAt = comment.createdAt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
             )
@@ -90,7 +106,9 @@ class CommunityService(
 
         return PostDetailResponse(
             id = post.id!!,
+            authorUserId = if (post.anonymous) null else post.userId,
             authorName = if (post.anonymous) "匿名用户" else (author?.nickname ?: "未知用户"),
+            authorAvatarUrl = if (post.anonymous) null else author?.avatarUrl,
             boardName = board.nameZh,
             title = post.title ?: "无标题帖子",
             content = post.content,
@@ -147,11 +165,9 @@ class CommunityService(
     }
 
     @Transactional
-    fun createComment(postId: Long, request: CreateCommentRequest): PostCommentResponse {
+    fun createComment(userId: Long, postId: Long, request: CreateCommentRequest): PostCommentResponse {
         val post = postRepository.findById(postId)
             .orElseThrow { IllegalArgumentException("帖子不存在") }
-        val userId = userRepository.findFirstByOrderByIdAsc()?.id
-            ?: throw IllegalArgumentException("当前没有可用用户")
         val profile = userProfileRepository.findByUserId(userId)
             ?: throw IllegalArgumentException("用户资料不存在")
 
@@ -168,10 +184,57 @@ class CommunityService(
         return PostCommentResponse(
             id = saved.id!!,
             authorName = profile.nickname,
+            authorAvatarUrl = profile.avatarUrl,
             content = saved.content,
             createdAt = saved.createdAt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         )
     }
+
+    private fun createPostForUser(
+        userId: Long,
+        boardId: Long,
+        title: String?,
+        content: String,
+        imageUrls: List<String>,
+        anonymous: Boolean,
+    ): PostSummaryResponse {
+        userRepository.findById(userId).orElseThrow { IllegalArgumentException("用户不存在") }
+        val board = boardRepository.findById(boardId)
+            .orElseThrow { IllegalArgumentException("板块不存在") }
+        val profile = userProfileRepository.findByUserId(userId)
+            ?: throw IllegalArgumentException("用户资料不存在")
+
+        val saved = postRepository.save(
+            PostEntity(
+                userId = userId,
+                boardId = board.id!!,
+                title = title,
+                content = content,
+                imageUrlsJson = encodeImageUrls(imageUrls),
+                anonymous = anonymous,
+            )
+        )
+
+        return PostSummaryResponse(
+            id = saved.id!!,
+            authorUserId = if (saved.anonymous) null else userId,
+            authorName = if (saved.anonymous) "匿名用户" else profile.nickname,
+            authorAvatarUrl = if (saved.anonymous) null else profile.avatarUrl,
+            boardName = board.nameZh,
+            title = saved.title ?: "",
+            summary = saved.content,
+            imageUrls = decodeImageUrls(saved.imageUrlsJson),
+            likeCount = saved.likeCount,
+            commentCount = saved.commentCount,
+            favoriteCount = saved.favoriteCount,
+            createdAt = saved.createdAt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        )
+    }
+
+    private fun getDirectFriendUserIds(userId: Long): Set<Long> =
+        friendshipRepository.findAllByUserIdAndStatusOrderByCreatedAtDesc(userId)
+            .map { it.friendUserId }
+            .toSet()
 
     private fun buildPostSummary(
         post: PostEntity,
@@ -180,7 +243,9 @@ class CommunityService(
     ): PostSummaryResponse =
         PostSummaryResponse(
             id = post.id!!,
+            authorUserId = if (post.anonymous) null else post.userId,
             authorName = if (post.anonymous) "匿名用户" else (profiles[post.userId]?.nickname ?: "未知用户"),
+            authorAvatarUrl = if (post.anonymous) null else profiles[post.userId]?.avatarUrl,
             boardName = boards[post.boardId]?.nameZh ?: "未分类",
             title = post.title ?: "无标题帖子",
             summary = post.content.take(80),

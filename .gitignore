@@ -13,6 +13,10 @@
 build/
 
 # Frontend build/node_modules
-/new_frontend/node_modules/
-/new_frontend/.next/
-/new_frontend/out/
+/new_fronted/node_modules/
+/new_fronted/.next/
+/new_fronted/out/
+
+# Runtime/generated backend files
+/backend/bin/
+/backend/uploads/

@@ -19,6 +19,9 @@ class ConversationMemberEntity(
     @Column(name = "unread_count", nullable = false)
     var unreadCount: Int = 0,
 
+    @Column(name = "is_admin", nullable = false)
+    var isAdmin: Boolean = false,
+
     @Column(name = "created_at", nullable = false)
     var createdAt: LocalDateTime = LocalDateTime.now(),
 )
